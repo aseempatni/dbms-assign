@@ -1,0 +1,75 @@
+mysql> select * from movies;
++------+------------+------+-------------+--------+
+| mid  | title      | year | num_ratings | rating |
++------+------------+------+-------------+--------+
+| 1002 | Lagaan     | 2001 |       47984 |    8.3 |
+| 1087 | PK         | 2014 |       30501 |    8.7 |
+| 1012 | Queen      | 2014 |       24700 |    8.5 |
+| 1013 | Sholay     | 1975 |       20203 |    8.6 |
+| 1015 | Black      | 2005 |       19022 |    8.3 |
+| 1017 | The Rising | 2005 |        6134 |    6.7 |
+| 1019 | Baghban    | 2003 |        6551 |    7.4 |
++------+------------+------+-------------+--------+
+7 rows in set (0.00 sec)
+
+
+mysql> select * from play_in;
++------+------------------+---------------+
+| mid  | name             | cast_position |
++------+------------------+---------------+
+| 1002 | Aamir Khan       |             1 |
+| 1087 | Aamir Khan       |             1 |
+| 1019 | Amitabh Bachchan |             1 |
+| 1012 | Kangana Ranaut   |             1 |
+| 1013 | Dharmendra       |             1 |
+| 1013 | Sanjeev Kumar    |             2 |
+| 1013 | Hema Malini      |             3 |
+| 1013 | Amitabh Bachchan |             4 |
+| 1015 | Amitabh Bachchan |             1 |
+| 1015 | Rani Mukherjee   |             2 |
+| 1017 | Rani Mukherjee   |             2 |
+| 1017 | Aamir Khan       |             1 |
+| 1019 | Hema Malini      |             2 |
+| 1012 | Rajkumar Rao     |             2 |
++------+------------------+---------------+
+14 rows in set (0.00 sec)
+
+
+Aircraft table values...
+
+INSERT INTO aircraft VALUES (1001, 'BOEING-747', 20000);
+INSERT INTO aircraft VALUES (1002, 'BOEING-707', 30000);
+INSERT INTO aircraft VALUES (1003, 'BOMBARDIER-415', 10000);
+INSERT INTO aircraft VALUES (1004, 'BOMBARDIER-700', 15000);
+INSERT INTO aircraft VALUES (1005, 'AIRBUS-A320', 15000);
+INSERT INTO aircraft VALUES (1006, 'AIRBUS-A340', 20000);
+INSERT INTO aircraft VALUES (1007, 'AIRBUS-A380', 30000);
+
+
+Pilot table values...
+INSERT INTO pilot VALUES (2001, 'LIO', 30);
+INSERT INTO pilot VALUES (2002, 'BOB', 20);
+INSERT INTO pilot VALUES (2003, 'DAVID', 25);
+INSERT INTO pilot VALUES (2004, 'BRUCE', 10);
+INSERT INTO pilot VALUES (2005, 'CRISTIANO', 30);
+INSERT INTO pilot VALUES (2006, 'RYAN', 10);
+INSERT INTO pilot VALUES (2007, 'FERNANDO', 15);
+INSERT INTO pilot VALUES (2008, 'KUN', 15);
+
+Certified table values...
+INSERT INTO certified VALUES (1001, 2001);
+INSERT INTO certified VALUES (1002, 2001);
+INSERT INTO certified VALUES (1004, 2001);
+INSERT INTO certified VALUES (1003, 2002);
+INSERT INTO certified VALUES (1005, 2002);
+INSERT INTO certified VALUES (1004, 2003);
+INSERT INTO certified VALUES (1006, 2003);
+INSERT INTO certified VALUES (1007, 2004);
+INSERT INTO certified VALUES (1001, 2005);
+INSERT INTO certified VALUES (1003, 2006);
+INSERT INTO certified VALUES (1007, 2007);
+INSERT INTO certified VALUES (1005, 2007);
+INSERT INTO certified VALUES (1002, 2007);
+INSERT INTO certified VALUES (1001, 2008);
+INSERT INTO certified VALUES (1003, 2008);
+INSERT INTO certified VALUES (1006, 2008);

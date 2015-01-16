@@ -1,0 +1,120 @@
+1.
+
+mysql> select count(distinct name) as count_of_actors from movies natural join play_in where year > 2005;
++-----------------+
+| count_of_actors |
++-----------------+
+|               3 |
++-----------------+
+1 row in set (0.00 sec)
+
+
+
+2.
+
+mysql>  select name from movies natural join play_in where mid in (select mid from play_in where name = "Rani Mukherjee") and name <> "Rani Mukherjee" order by name; 
++------------------+
+| name             |
++------------------+
+| Aamir Khan       |
+| Amitabh Bachchan |
++------------------+
+2 rows in set (0.00 sec)
+
+
+3.
+
+mysql> select name, sum(rating) as gross_rating from movies natural join play_in group by name order by gross_rating desc;
++------------------+------------------+
+| name             | gross_rating     |
++------------------+------------------+
+| Amitabh Bachchan |  24.300000667572 |
+| Aamir Khan       | 23.6999998092651 |
+| Hema Malini      | 16.0000004768372 |
+| Rani Mukherjee   |               15 |
+| Dharmendra       | 8.60000038146973 |
+| Sanjeev Kumar    | 8.60000038146973 |
+| Rajkumar Rao     |              8.5 |
+| Kangana Ranaut   |              8.5 |
++------------------+------------------+
+8 rows in set (0.00 sec)
+
+
+4.
+
+mysql> select name from movies natural join play_in as s group by name,year having year = 2005 and count(title) > all (select count(title) from movies natural join play_in as t group by name,year having year <>  2005 and s.name = t.name );
++----------------+
+| name           |
++----------------+
+| Rani Mukherjee |
++----------------+
+1 row in set (0.01 sec)
+
+
+5.
+
+Part 1:
+
+mysql> select distinct(P.name) from nat_join as P, nat_join as Q, nat_join as R where (P.name = Q.name and Q.name = R.name and P.mid != Q.mid and Q.mid != R.mid and R.mid != P.mid and P.year <= Q.year and Q.year <= R.year and P.rating = Q.rating and Q.rating = R.rating and not exists(select * from nat_join as S where S.year < P.year and S.year < Q.year and S.name = P.name) and not exists(select * from nat_join as S where Q.year < S.year and S.year < R.year and S.name = P.name));
+Empty set (0.00 sec)
+
+
+Part 2:
+
+mysql> select distinct name from movies as A natural join play_in as B group by name,rating having count(*) = (select max(rating_cnt) from(select count(*) as rating_cnt from movies as S natural join play_in as T group by name,rating) as R);
++------------------+
+| name             |
++------------------+
+| Aamir Khan       |
+| Amitabh Bachchan |
+| Dharmendra       |
+| Hema Malini      |
+| Kangana Ranaut   |
+| Rajkumar Rao     |
+| Rani Mukherjee   |
+| Sanjeev Kumar    |
++------------------+
+8 rows in set (0.00 sec)
+
+
+
+
+
+3.
+
+1.
+
+mysql> select aname from aircraft natural join certified natural join pilot group by aid having min(salary) > 20;
++----------------+
+| aname          |
++----------------+
+| BOMBARDIER-700 |
++----------------+
+1 row in set (0.00 sec)
+
+
+2.
+
+mysql> select  aname, avg(salary) from aircraft natural join certified natural join pilot where cruisingrange > 15000 group by aid;
++-------------+-------------+
+| aname       | avg(salary) |
++-------------+-------------+
+| BOEING-747  |     25.0000 |
+| BOEING-707  |     22.5000 |
+| AIRBUS-A340 |     20.0000 |
+| AIRBUS-A380 |     12.5000 |	
++-------------+-------------+
+4 rows in set (0.00 sec)
+
+3.
+
+mysql> select distinct(pname) from aircraft natural join certified natural join pilot where cruisingrange >15000 and pname not in (select distinct(pname) from aircraft natural join certified natural join pilot where aname like '%BOEING%');
++-------+
+| pname |
++-------+
+| DAVID |
+| BRUCE |
++-------+
+2 rows in set (0.01 sec)
+
+
