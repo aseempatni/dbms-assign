@@ -1,0 +1,383 @@
+a)
+
+create table PROJECT (
+	Code char(4),
+	Type char,
+	Title varchar(50),
+	Sponsor varchar(10),
+	Value int,
+	PI int,
+	primary key(Code),
+	foreign key (PI) references faculty(EC)
+);
+
+create table FACULTY (
+	EC int,
+	Name varchar(20),
+	Dept varchar(4),
+	Dob date,
+	primary key (EC)
+);
+
+create table INVESTIGATOR (
+	Code char(4),
+	EC int,
+	primary key(Code, EC),
+	foreign key (Code) references project (Code),
+	foreign key (EC) references faculty (EC)
+);
+
+create table STAFF (
+	EC int,
+	Name varchar(50),
+	Code char(4),
+	Dob date,
+	Salary int,
+	primary key (EC),
+	foreign key (Code) references project(Code)
+);
+
+Tables created and data inserted.
+
+
+b)
+
+1)
+
+mysql> select Code from PROJECT WHERE Type = 'C' order by value desc;
++------+
+| Code |
++------+
+| OCDE |
+| DCA1 |
+| IALO |
++------+
+3 rows in set (0.00 sec)
+
+
+2)
+
+mysql> select * from PROJECT WHERE Title like '%VLSI%' order by value;
+Empty set (0.00 sec)
+
+3)
+
+mysql> select * from FACULTY order by Dept, Dob desc;
++------+--------------+------+------------+
+| EC   | Name         | Dept | Dob        |
++------+--------------+------+------------+
+| 1010 | GARLAN D.    | CSE  | 1980-05-16 |
+| 1002 | GIBBONS P.   | CSE  | 1979-02-15 |
+| 1001 | BRYANT R.    | CSE  | 1975-01-28 |
+| 1005 | MILLER G.    | CSE  | 1970-11-25 |
+| 1004 | ROHDE G.     | ECE  | 1976-12-28 |
+| 1008 | DANENBERG R. | ECE  | 1972-04-16 |
+| 1007 | BELLOCH G.   | EE   | 1980-03-03 |
+| 1006 | KINGSFORD C. | EE   | 1968-05-21 |
+| 1003 | MANKOFF J.   | MECH | 1972-02-07 |
+| 1009 | PAVLO A.     | MECH | 1965-01-02 |
++------+--------------+------+------------+
+10 rows in set (0.00 sec)
+
+4)
+
+mysql> select * from STAFF where Dob < '1985-12-31' and Dob > '1980-01-01' order by Name;
++------+------------------+------+------------+--------+
+| EC   | Name             | Code | Dob        | Salary |
++------+------------------+------+------------+--------+
+| 2002 | ANSUMAN BANERJEE | VSS1 | 1985-05-21 |  18000 |
++------+------------------+------+------------+--------+
+1 row in set (0.00 sec)
+
+
+C)
+
+1)
+
+mysql> select count(EC) from STAFF;
++-----------+
+| count(EC) |
++-----------+
+|         8 |
++-----------+
+1 row in set (0.00 sec)
+
+2)
+
+mysql> select count(EC) from FACULTY where Dept = 'CSE' or Dept = 'ECE' or Dept = 'EE';; 
++-----------+
+| count(EC) |
++-----------+
+|         8 |
++-----------+
+1 row in set (0.00 sec)
+
+3)
+
+mysql> select Code, count(EC) from STAFF group by Code;
++------+-----------+
+| Code | count(EC) |
++------+-----------+
+| BBDP |         1 |
+| BHSM |         1 |
+| IALO |         2 |
+| LPDC |         1 |
+| SACP |         1 |
+| VSS1 |         2 |
++------+-----------+
+6 rows in set (0.00 sec)
+
+4)
+
+mysql> select Code, max(salary), min(salary), avg(salary) from STAFF group by Code having Code like '%MAFV%';
+Empty set (0.00 sec)
+
+5)
+
+mysql> select Sponsor, max(Value), min(Value), avg(Value) from PROJECT group by Sponsor;
++---------+------------+------------+--------------+
+| Sponsor | max(Value) | min(Value) | avg(Value)   |
++---------+------------+------------+--------------+
+| BHL     |    6000000 |     200000 | 3100000.0000 |
+| DMI     |    5000000 |    3000000 | 4000000.0000 |
+| GIL     |     500000 |     500000 |  500000.0000 |
+| HAL     |    8000000 |    8000000 | 8000000.0000 |
+| HII     |     800000 |     800000 |  800000.0000 |
+| RLY     |    4000000 |    2000000 | 3000000.0000 |
++---------+------------+------------+--------------+
+6 rows in set (0.00 sec)
+
+6)
+
+mysql> select Code from STAFF group by Code having count(EC) <3;
++------+
+| Code |
++------+
+| BBDP |
+| BHSM |
+| IALO |
+| LPDC |
+| SACP |
+| VSS1 |
++------+
+6 rows in set (0.00 sec)
+
+7)
+
+mysql> select * from PROJECT order by Value desc limit 5;
++------+------+--------------------------+---------+---------+------+
+| Code | Type | Title                    | Sponsor | Value   | PI   |
++------+------+--------------------------+---------+---------+------+
+| SRC1 | S    | SOLID STATE DEVICES      | HAL     | 8000000 | 1008 |
+| BBDP | S    | BLACK BODY RADIATION     | BHL     | 6000000 | 1007 |
+| SACP | S    | SIDE CHANNEL ATTACKS     | DMI     | 5000000 | 1002 |
+| BHSM | S    | BRIDGE HEALTH MONIROTING | RLY     | 4000000 | 1004 |
+| LPDC | S    | LOW POWER CIRCUITS       | DMI     | 3000000 | 1006 |
++------+------+--------------------------+---------+---------+------+
+5 rows in set (0.00 sec)
+
+8)
+
+mysql> select * from STAFF where Salary > (select avg(Salary) from STAFF);
++------+------------------+------+------------+--------+
+| EC   | Name             | Code | Dob        | Salary |
++------+------------------+------+------------+--------+
+| 2003 | OMAR GONZALEZ    | SACP | 1989-04-16 |  20000 |
+| 2004 | ALAN GORDON      | IALO | 1989-05-03 |  20000 |
+| 2006 | CHANDLER HOFFMAN | BBDP | 1988-07-17 |  22000 |
++------+------------------+------+------------+--------+
+3 rows in set (0.00 sec)
+
+
+d)
+
+1)
+
+mysql> select Title from PROJECT, FACULTY where PI = EC and Dept = 'CSE';
++-------------------------------+
+| Title                         |
++-------------------------------+
+| VALIDATION OF CONTROL SYSTEMS |
+| SIDE CHANNEL ATTACKS          |
++-------------------------------+
+2 rows in set (0.00 sec)
+
+2)
+
+mysql> select * from STAFF where Code in (select Code from PROJECT, FACULTY where PI = EC and Dept = 'CSE');
++------+------------------+------+------------+--------+
+| EC   | Name             | Code | Dob        | Salary |
++------+------------------+------+------------+--------+
+| 2001 | ROBBIE KEANE     | VSS1 | 1990-05-16 |  18000 |
+| 2002 | ANSUMAN BANERJEE | VSS1 | 1985-05-21 |  18000 |
+| 2003 | OMAR GONZALEZ    | SACP | 1989-04-16 |  20000 |
++------+------------------+------+------------+--------+
+3 rows in set (0.00 sec)
+
+3)
+
+mysql> select * from FACULTY natural join INVESTIGATOR natural join PROJECT where Title like '%VLSI%';
+Empty set (0.00 sec)
+
+4)
+
+mysql> SELECT name,type_S,Type_C FROM (SELECT * FROM (SELECT DISTINCT ec,type AS Type_S FROM PROJECT NATURAL JOIN INVESTIGATOR WHERE type='S') AS A NATURAL LEFT OUTER JOIN (SELECT DISTINCT ec,type AS Type_C FROM PROJECT NATURAL JOIN INVESTIGATOR WHERE type='C') AS B UNION SELECT ec,Type_S,Type_C FROM (SELECT DISTINCT ec,Type AS Type_S FROM PROJECT NATURAL JOIN INVESTIGATOR WHERE type='S') AS B NATURAL RIGHT OUTER JOIN (SELECT DISTINCT ec,type AS Type_C FROM PROJECT NATURAL JOIN INVESTIGATOR WHERE type='C') AS A) AS X NATURAL RIGHT JOIN FACULTY;
++--------------+--------+--------+
+| Name         | Type_S | Type_C |
++--------------+--------+--------+
+| BRYANT R.    | NULL   | NULL   |
+| GIBBONS P.   | S      | NULL   |
+| MANKOFF J.   | NULL   | C      |
+| ROHDE G.     | S      | NULL   |
+| MILLER G.    | NULL   | NULL   |
+| KINGSFORD C. | S      | NULL   |
+| BELLOCH G.   | S      | C      |
+| DANENBERG R. | S      | NULL   |
+| PAVLO A.     | NULL   | C      |
+| GARLAN D.    | S      | NULL   |
++--------------+--------+--------+
+
+5)
+
+mysql> select * from STAFF where Code = (select Code from STAFF where Name = 'ANSUMAN BANERJEE') and name <> 'ANSUMAN BANERJEE';
++------+--------------+------+------------+--------+
+| EC   | Name         | Code | Dob        | Salary |
++------+--------------+------+------------+--------+
+| 2001 | ROBBIE KEANE | VSS1 | 1990-05-16 |  18000 |
++------+--------------+------+------------+--------+
+1 row in set (0.00 sec)
+
+
+e)
+
+1)
+
+mysql> select distinct Name from FACULTY natural join INVESTIGATOR natural join PROJECT where Type = 'S' and Name not in (select distinct Name from FACULTY natural join INVESTIGATOR natural join PROJECT where Type = 'C');
++--------------+
+| Name         |
++--------------+
+| BRYANT R.    |
+| GIBBONS P.   |
+| ROHDE G.     |
+| KINGSFORD C. |
+| DANENBERG R. |
+| GARLAN D.    |
++--------------+
+6 rows in set (0.00 sec)
+
+2)
+
+mysql> select distinct Name from FACULTY natural join INVESTIGATOR natural join PROJECT where Type = 'S' and Name in (select distinct Name from FACULTY natural join INVESTIGATOR natural join PROJECT where Type = 'C');
++------------+
+| Name       |
++------------+
+| BELLOCH G. |
++------------+
+1 row in set (0.00 sec)
+
+3)
+
+mysql> select distinct Name from STAFF natural join PROJECT where Sponsor = 'RLY' union select distinct Name from FACULTY natural join INVESTIGATOR natural join PROJECT where Sponsor = 'RLY';
++------------------+
+| Name             |
++------------------+
+| ROBBIE KEANE     |
+| ANSUMAN BANERJEE |
+| PAUL POGBA       |
+| BRYANT R.        |
+| GIBBONS P.       |
+| ROHDE G.         |
++------------------+
+6 rows in set (0.00 sec)
+
+for projects sponsored by INTEL
+
+mysql> select distinct Name from STAFF natural join PROJECT where Sponsor = 'INTEL' union select distinct Name from FACULTY natural join INVESTIGATOR natural join PROJECT where Sponsor = 'INTEL';
+Empty set (0.00 sec)
+
+
+f)
+
+1)
+
+mysql> select Sponsor from PROJECT inner join FACULTY on PI = EC group by Sponsor having count(distinct Dept) = (select count(distinct Dept) from FACULTY);Empty set (0.00 sec)
+
+2)
+
+mysql> select p1.* from PROJECT as p1 INNER JOIN FACULTY on PI = EC where Dob =  ( select max(Dob) from INVESTIGATOR natural join FACULTY where Code = p1.Code);
++------+------+--------------------------+---------+---------+------+
+| Code | Type | Title                    | Sponsor | Value   | PI   |
++------+------+--------------------------+---------+---------+------+
+| DCA1 | C    | SELF DRIVING CAR         | GIL     |  500000 | 1003 |
+| BHSM | S    | BRIDGE HEALTH MONIROTING | RLY     | 4000000 | 1004 |
+| BBDP | S    | BLACK BODY RADIATION     | BHL     | 6000000 | 1007 |
+| OCDE | C    | OPERATIONS RESEARCH      | HII     |  800000 | 1009 |
++------+------+--------------------------+---------+---------+------+
+4 rows in set (0.00 sec)
+
+3)
+
+mysql> select distinct Dept from FACULTY as F where not exists(select * from PROJECT inner join FACULTY as S on PI = EC where F.Dept = S.Dept and Type = 'C');
++------+
+| Dept |
++------+
+| CSE  |
+| ECE  |
+| EE   |
++------+
+3 rows in set (0.00 sec)
+
+4)
+
+mysql> create view v as select *,sum(Value) as sum from PROJECT inner join FACULTY on PI = EC group by Dept;
+mysql> select Dept from v where sum = (select max(sum) from v);
++------+
+| Dept |
++------+
+| ECE  |
++------+
+1 row in set (0.00 sec)
+
+5)
+
+mysql> select Dept, Name from FACULTY as f where not exists(select * from INVESTIGATOR as i where f.EC = i.EC);
++------+-----------+
+| Dept | Name      |
++------+-----------+
+| CSE  | MILLER G. |
++------+-----------+
+1 row in set (0.00 sec)
+
+6)
+
+mysql> select Title from pif as f1 where not exists (select EC from FACULTY as f2 where f2.Dept = f1.Dept and not exists (select * from pif where EC = f2.EC and Code = f1.Code));
+Empty set (0.00 sec)
+
+7)
+
+create view ifc as INVESTIGATOR natural join FACULTY group by Dept,EC;
+mysql> select * from FACULTY  where 
+EC in ( select EC from FACULTY as a where a.Dob <= all (select Dob from FACULTY as b where b.Dept = a.Dept) ) 
+and 
+EC in ( select EC from ifc as a where count = (select max(count) from ifc where Dept = a.Dept) );
++------+--------------+------+------------+
+| EC   | Name         | Dept | Dob        |
++------+--------------+------+------------+
+| 1008 | DANENBERG R. | ECE  | 1972-04-16 |
++------+--------------+------+------------+
+1 row in set (0.00 sec)
+
+
+g)
+
+1)ALTER TABLE PROJECT ADD  FOREIGN KEY(PI) REFERENCES FACULTY(EC) ON DELETE CASCADE;
+ ALTER TABLE INVESTIGATOR ADD FOREIGN KEY(EC) REFERENCES FACULTY(EC) ON DELETE CASCADE;
+
+2)ALTER TABLE PROJECT ADD  FOREIGN KEY(PI) REFERENCES FACULTY(EC) ON DELETE CASCADE SET NULL;
+ ALTER TABLE INVESTIGATOR ADD FOREIGN KEY(EC) REFERENCES FACULTY(EC) ON DELETE CASCADE SET NULL;
+
+3)UPDATE PROJECT SET PI=1012 WHERE CODE='%SRC1%';
+
+4)ALTER TABLE PROJECT ADD CHECK(VALUE>=100000);
+
+5)ALTER TABLE STAFF ADD CHECK(TIMESTAMPDIFF(YEAR,DOB,CURDATE())>=18);
