@@ -1,0 +1,116 @@
+create table 12CS10008_movie(
+	MID char(9),
+	title varchar(50),
+	year int,
+	rating float,
+	num_votes int,
+	primary key (MID)
+)
+
+create table 12CS10008_person (
+	PID char(9),
+	name varchar(50),
+	DOB date,
+	gender varchar(10),
+	primary key (PID)
+)
+
+create table 12CS10008_genre (
+	GID int NOT NULL AUTO_INCREMENT = 1000,
+	Name varchar(20),
+	primary key(GID)
+)
+alter table 12CS10008_genre AUTO_INCREMENT = 1000;
+
+create table 12CS10008_language (
+	LAID int NOT NULL AUTO_INCREMENT,
+	Name varchar(20),
+	primary key (LAID)
+)
+alter table 12CS10008_language AUTO_INCREMENT = 1000;
+
+create table 12CS10008_country (
+	CID int NOT NULL AUTO_INCREMENT,
+	Name varchar(20),
+	primary key (CID)
+)
+alter table 12CS10008_country AUTO_INCREMENT = 1000;
+
+create table 12CS10008_location (
+	LID int NOT NULL AUTO_INCREMENT,
+	Name varchar(20),
+	primary key (LID)
+)
+alter table 12CS10008_location AUTO_INCREMENT = 1000;
+
+
+create table 12CS10008_m_producer (
+	ID int NOT NULL AUTO_INCREMENT,
+	MID char(9),
+	PID char(9),
+	primary key (ID),
+	foreign key (MID) references 12CS10008_movie(MID),
+	foreign key (PID) references 12CS10008_person(PID)
+);
+alter table 12CS10008_m_producer AUTO_INCREMENT = 1000;
+
+create table 12CS10008_m_director (
+	ID int NOT NULL AUTO_INCREMENT,
+	MID char(9),
+	PID char(9),
+	primary key (ID),
+	foreign key (MID) references 12CS10008_movie(MID),
+	foreign key (PID) references 12CS10008_person(PID)
+);
+alter table 12CS10008_m_director AUTO_INCREMENT = 1000;
+
+create table 12CS10008_m_cast (
+	ID int NOT NULL AUTO_INCREMENT,
+	MID char(9),
+	PID char(9),
+	primary key (ID),
+	foreign key (MID) references 12CS10008_movie(MID),
+	foreign key (PID) references 12CS10008_person(PID)
+);
+alter table 12CS10008_m_cast AUTO_INCREMENT = 1000;
+
+create table 12CS10008_m_genre (
+	ID int NOT NULL AUTO_INCREMENT,
+	MID char(9),
+	PID char(9),
+	primary key (ID),
+	foreign key (MID) references 12CS10008_movie(MID),
+	foreign key (PID) references 12CS10008_person(PID)
+);
+alter table 12CS10008_m_genre AUTO_INCREMENT = 1000;
+
+create table 12CS10008_m_language (
+	ID int NOT NULL AUTO_INCREMENT,
+	MID char(9),
+	PID char(9),
+	primary key (ID),
+	foreign key (MID) references 12CS10008_movie(MID),
+	foreign key (PID) references 12CS10008_person(PID)
+);
+alter table 12CS10008_m_language AUTO_INCREMENT = 1000;
+
+create table 12CS10008_m_country (
+	ID int NOT NULL AUTO_INCREMENT,
+	MID char(9),
+	PID char(9),
+	primary key (ID),
+	foreign key (MID) references 12CS10008_movie(MID),
+	foreign key (PID) references 12CS10008_person(PID)
+);
+alter table 12CS10008_m_country AUTO_INCREMENT = 1000;
+
+create table 12CS10008_m_location (
+	ID int NOT NULL AUTO_INCREMENT,
+	MID char(9),
+	PID char(9),
+	primary key (ID),
+	foreign key (MID) references 12CS10008_movie(MID),
+	foreign key (PID) references 12CS10008_person(PID)
+);
+alter table 12CS10008_m_location AUTO_INCREMENT = 1000;
+
