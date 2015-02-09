@@ -1,0 +1,17 @@
+1. Download the file imbd.sql from the portal (Moodle) to your local machine and keep it on your desktop.
+
+2. Run the following command from your local machine with proper parameters.
+
+	$: scp ~/Desktop/imdb.sql <your_roll_no>@10.5.18.66/67/68/69:~
+
+   This command will copy the file (imdb.sql) to the your home folder in the DB server.
+
+3. Log-in to the DB server, log-in to mysql and select your database.
+
+4. Run the following command..
+
+	mysql> source imdb.sql;
+
+5. Use the following command to check if the tables are loaded or not..
+
+	SHOW TABLES;

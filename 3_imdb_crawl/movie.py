@@ -47,7 +47,13 @@ def add_movie(data) :
 def add_cast(data):
     for i in range(len(data['cast'])):
         if addDob==True:
-            dob = getDob(data['cast'][i][0])
+            more = getDob(data['cast'][i][0])
+            dob = more[0]
+            if more[1].split()=="Actor":
+                gender = "Male" 
+            else:
+                gender = "Female" 
+            print more
             # add cast to person
             sql = ""
             sql = sql + "INSERT INTO " +prefix+"_person(PID, name, DOB) "
@@ -56,6 +62,8 @@ def add_cast(data):
             # print sql
             cursor.execute(sql)
             db.commit()
+            print gender
+
         else:
             # add cast to person
             sql = ""

@@ -141,7 +141,11 @@ def getDob(id):
         date = hxs.xpath('//*[@itemprop="birthDate"]/@datetime')[0]
     except IndexError:
         date = ""
-    return date
+    try:
+        gender = hxs.xpath('//*[@itemprop="jobTitle"]/text()')[0]
+    except IndexError:
+        gender = ""
+    return [date,gender]
 
 
 if __name__ == "__main__":
