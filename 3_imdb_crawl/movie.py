@@ -12,7 +12,7 @@ from parse import getDob
 
 # connect to database and get a cursor
 try:
-    db = mdb.connect('10.5.18.68', '12CS10008', 'btech12', '12CS10008');
+    db = mdb.connect('10.5.18.66', '12CS10008', 'btech12', '12CS10008');
     cursor = db.cursor()
 
 except mdb.Error, e:
@@ -50,9 +50,9 @@ def add_cast(data):
             more = getDob(data['cast'][i][0])
             dob = more[0]
             if more[1].split()=="Actor":
-                gender = "Male" 
+                gender = "Male"
             else:
-                gender = "Female" 
+                gender = "Female"
             print more
             # add cast to person
             sql = ""
@@ -111,13 +111,13 @@ def add_director (data):
     sql = sql + "SELECT * FROM (SELECT " + "\""+data['DID']+"\",\""+data['director']+"\"" +") as tmp "
     sql = sql + "WHERE NOT EXISTS ( SELECT PID FROM  " + prefix+"_person WHERE PID =\"" + data['DID']+ "\" ) LIMIT 1"
     cursor.execute(sql)
-    db.commit()    
+    db.commit()
     sql = ""
     sql = sql + "INSERT INTO " +prefix+"_m_director(MID, PID) "
     sql = sql + "SELECT * FROM (SELECT " + "\""+data['MID']+"\",\""+data['DID']+"\"" +") as tmp "
     sql = sql + "WHERE NOT EXISTS ( SELECT MID, PID FROM  " + prefix+"_m_director WHERE MID =\"" + data['MID'] + "\" AND PID =\"" + data['DID'] + "\" ) LIMIT 1"
     cursor.execute(sql)
-    db.commit()    
+    db.commit()
 
 def add_genre (data):
     for i in range(len(data['genre'])):
@@ -138,7 +138,7 @@ def add_genre (data):
         sql = sql + "WHERE NOT EXISTS ( SELECT MID, GID FROM  " + prefix+"_m_genre WHERE MID =\"" + data['MID'] + "\" AND GID =" + GID + " ) LIMIT 1"
         # print sql
         cursor.execute(sql)
-        db.commit() 
+        db.commit()
 
 def add_country (data):
     for i in range(len(data['country'])):
@@ -159,7 +159,7 @@ def add_country (data):
         sql = sql + "WHERE NOT EXISTS ( SELECT MID, CID FROM  " + prefix+"_m_country WHERE MID =\"" + data['MID'] + "\" AND CID =" + CID + " ) LIMIT 1"
         # print sql
         cursor.execute(sql)
-        db.commit() 
+        db.commit()
 
 def add_language (data):
     for i in range(len(data['language'])):
@@ -180,7 +180,7 @@ def add_language (data):
         sql = sql + "WHERE NOT EXISTS ( SELECT MID, LAID FROM  " + prefix+"_m_language WHERE MID =\"" + data['MID'] + "\" AND LAID =" + LAID + " ) LIMIT 1"
         # print sql
         cursor.execute(sql)
-        db.commit() 
+        db.commit()
 
 def add_location (data):
     for i in range(len(data['location'])):
@@ -201,7 +201,7 @@ def add_location (data):
         sql = sql + "WHERE NOT EXISTS ( SELECT MID, LID FROM  " + prefix+"_m_location WHERE MID =\"" + data['MID'] + "\" AND LID =" + LID + " ) LIMIT 1"
         # print sql
         cursor.execute(sql)
-        db.commit() 
+        db.commit()
 
 def ptable(name):
     sql = "select * from "+prefix+ "_" + name

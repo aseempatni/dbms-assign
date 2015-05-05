@@ -1,0 +1,506 @@
+/*
+
+Everywhere i have used limit 10 to show limit the size of the result.
+
+There are some vies that I have defined in some question and used them in succeeding questions.
+
+2. d) Lead actor is not specified in the database.
+
+*/
+
+
+====================================================================================================
+1)
+====================================================================================================
+
+a)
+
+mysql> select year, title,Name  from pratip_Movie natural join pratip_M_Director natural join pratip_Person where MID in ( select MID from pratip_Movie  natural join pratip_M_Genre natural join pratip_Genre where Name = "Comedy" and year%4=0 ) limit 10;
++------+--------------------+----------------------+
+| year | title              | Name                 |
++------+--------------------+----------------------+
+| 1956 | Jagte Raho         | Amit Mitra           |
+| 1956 | Jagte Raho         | Sombhu Mitra         |
+| 1960 | Parakh             | Bimal Roy            |
+| 1964 | Kashmir Ki Kali    | Shakti Samanta       |
+| 1968 | Padosan            | Jyoti Swaroop        |
+| 1968 | Sadhu Aur Shaitaan | A. Bhimsingh         |
+| 1972 | Mera Naam Joker    | Raj Kapoor           |
+| 1972 | Bawarchi           | Hrishikesh Mukherjee |
+| 1972 | Bombay to Goa      | S. Ramanathan        |
+| 1976 | Hera Pheri         | Prakash Mehra        |
++------+--------------------+----------------------+
+10 rows in set (0.01 sec)
+
+----------------------------------------------------------------------------------------------------
+
+b)
+
+mysql> select Name from pratip_M_Cast natural join pratip_Person where MID in ( select MID from pratip_Movie where title like "%Anand%" and year = 1971);
++------------------+
+| Name             |
++------------------+
+| Amitabh Bachchan |
+| Rajesh Khanna    |
+| Brahm Bhardwaj   |
+| Ramesh Deo       |
+| Seema Deo        |
+| Dev Kishan       |
+| Durga Khote      |
+| Lalita Kumari    |
+| Lalita Pawar     |
+| Atam Prakash     |
+| Sumita Sanyal    |
+| Asit Sen         |
+| Dara Singh       |
+| Johnny Walker    |
+| Moolchand        |
+| Gurnam Singh     |
+| Savita           |
++------------------+
+17 rows in set (0.13 sec)
+
+----------------------------------------------------------------------------------------------------
+
+c)
+
+mysql> select distinct  Name from pratip_M_Cast natural join pratip_Person where PID in (select PID from pratip_Movie natural join pratip_M_Cast  where year <1970) and PID in (select PID from pratip_Movie natural join pratip_M_Cast  where year >1990 ) limit 10;
++-------------------+
+| Name              |
++-------------------+
+| Amitabh Bachchan  |
+| Dharmendra        |
+| Prithviraj Kapoor |
+| Shammi Kapoor     |
+| Shashi Kapoor     |
+| Rajesh Khanna     |
+| Sunil Dutt        |
+| Ashok Kumar       |
+| Manoj Kumar       |
+| Subhash Ghai      |
++-------------------+
+10 rows in set (0.15 sec)
+
+----------------------------------------------------------------------------------------------------
+
+d)
+
+mysql> select Name ,count(MID) from pratip_M_Director natural join pratip_Person group by PID having  count(MID) >10  order by count(MID) desc ;
++---------------------------+------------+
+| Name                      | count(MID) |
++---------------------------+------------+
+| David Dhawan              |         35 |
+| Mahesh Bhatt              |         30 |
+| Ram Gopal Varma           |         29 |
+| Priyadarshan              |         25 |
+| Hrishikesh Mukherjee      |         24 |
+| Vikram Bhatt              |         23 |
+| Yash Chopra               |         20 |
+| Shyam Benegal             |         16 |
+| Subhash Ghai              |         16 |
+| Mastan Alibhai Burmawalla |         16 |
+| Abbas Alibhai Burmawalla  |         16 |
+| Manmohan Desai            |         15 |
+| Rahul Rawail              |         15 |
+| Gulzar                    |         15 |
+| Raj N. Sippy              |         15 |
+| Basu Chatterjee           |         15 |
+| Rajkumar Santoshi         |         14 |
+| Raj Kanwar                |         14 |
+| Rakesh Roshan             |         13 |
+| Rama Rao Tatineni         |         13 |
+| Shakti Samanta            |         13 |
+| Mahesh Manjrekar          |         12 |
+| Raj Khosla                |         12 |
+| Indra Kumar               |         12 |
+| Guddu Dhanoa              |         12 |
+| Anurag Kashyap            |         11 |
+| Satish Kaushik            |         11 |
+| Vijay Anand               |         11 |
++---------------------------+------------+
+28 rows in set (0.02 sec)
+
+----------------------------------------------------------------------------------------------------
+
+e)
+
+i)
+
+create view mcp as select * from pratip_Movie natural join pratip_M_Cast natural join pratip_Person 
+
+mysql> select year, count(distinct MID) from mcp as a where not exists(select * from mcp as b where a.MID = b.MID and Gender = "Male") group by year;
++------+---------------------+
+| year | count(distinct MID) |
++------+---------------------+
+| 2014 |                   1 |
++------+---------------------+
+1 row in set (9.85 sec)
+
+reporting for each year as asked in question:
+
+mysql> select distinct year as year_, (select count(distinct MID) from mcp as a where a.year = year_ and not exists(select * from mcp as b where a.MID = b.MID and Gender = "Male")) as cnt from pratip_Movie  limit 10;
++-------+------+
+| year_ | cnt  |
++-------+------+
+|  1931 |    0 |
+|  1936 |    0 |
+|  1948 |    0 |
+|  1949 |    0 |
+|  1951 |    0 |
+|  1953 |    0 |
+|  1952 |    0 |
+|  1954 |    0 |
+|  1955 |    0 |
+|  1956 |    0 |
++-------+------+
+10 rows in set (15.51 sec)
+
+testing for correctness:
+
+mysql> select distinct year as year_, (select count(distinct MID) from mcp as a where a.year = year_ and not exists(select * from mcp as b where a.MID = b.MID and Gender = "Male")) as count_female from pratip_Movie where year > 2012 limit 10; 
++-------+--------------+
+| year_ | count_female |
++-------+--------------+
+|  2013 |            0 |
+|  2014 |            1 |
++-------+--------------+
+2 rows in set (2 min 24.67 sec)
+
+ii)
+
+mysql> select *,100*count_female/total as percentage from (select year, count(distinct MID) as count_female, (select count(*) from pratip_Movie where year = a.year) as total from mcp as a where not exists(select * from mcp as b where a.MID = b.MID and Gender = "Male") group by year) as x;
++------+--------------+-------+------------+
+| year | count_female | total | percentage |
++------+--------------+-------+------------+
+| 2014 |            1 |    16 |     6.2500 |
++------+--------------+-------+------------+
+1 row in set (3.83 sec)
+
+----------------------------------------------------------------------------------------------------
+
+f)
+
+mysql> select title,count(distinct PID) as cast_size from mcp group by MID having cast_size = (select max(count) from (select *,count(distinct PID) as count from mc group by MID) as a)  order by count(PID) desc;
++----------+-----------+
+| title    | cast_size |
++----------+-----------+
+| Apaharan |       231 |
++----------+-----------+
+1 row in set (0.54 sec)
+
+----------------------------------------------------------------------------------------------------
+
+g)
+
+mysql> select * from (select distinct year as start, year+9 as end, (select count(MID) from pratip_Movie where year between start and end) as total from pratip_Movie) as x where total = (select max(total) from (select distinct year as start, year+9 as end, (select count(MID) from pratip_Movie where year between start and end) as total from pratip_Movie) as y) limit 10;
++-------+------+-------+
+| start | end  | total |
++-------+------+-------+
+|  2004 | 2013 |   851 |
++-------+------+-------+
+1 row in set (1.87 sec)
+
+----------------------------------------------------------------------------------------------------
+
+h)
+
+mysql> select PID, name from (select distinct PID from pratip_M_Cast where PID not in (select distinct a.PID from mc as a inner join mc as b on a.PID = b.PID where a.year - b.year > 3 and not exists(select * from mc as c where c.PID = a.PID and c.year <a.year and c.year >b.year ))) as x natural join pratip_Person limit 10;
++-----------+--------------------+
+| PID       | name               |
++-----------+--------------------+
+| nm0000047 | Sophia Loren       |
+| nm0000144 | Cary Elwes         |
+| nm0000155 | Whoopi Goldberg    |
+| nm0000230 | Sylvester Stallone |
+| nm0000502 | Christopher Lloyd  |
+| nm0000612 | Denise Richards    |
+| nm0000738 | Muhammad Ali       |
+| nm0001322 | Rex Harrison       |
+| nm0001426 | Ben Kingsley       |
+| nm0001541 | Kylie Minogue      |
++-----------+--------------------+
+10 rows in set (1.42 sec)
+
+----------------------------------------------------------------------------------------------------
+
+i)
+
+Yash Chopra's PID:
+
+select PID from pratip_Person where name = "Yash Chopra"
+
+mysql> select PID, name from (select distinct actor from admcount as a where director = (select PID from pratip_Person where name = "Yash Chopra") and mcount > all (select mcount from admcount where actor  = a.actor and director <>(select PID from pratip_Person where name = "Yash Chopra") )) as x inner join pratip_Person as b on b.PID = actor limit 10;
++-----------+------------------+
+| PID       | name             |
++-----------+------------------+
+| nm0004434 | Shashi Kapoor    |
+| nm0007181 | Yash Chopra      |
+| nm0015296 | Akhtar-Ul-Iman   |
+| nm0085944 | Paul Blackwell   |
+| nm0101508 | Steve Box        |
+| nm0159158 | Pamela Chopra    |
+| nm0347901 | Rakhee Gulzar    |
+| nm0348507 | Sumati Gupte     |
+| nm0407002 | Iftekhar         |
+| nm0471443 | Manmohan Krishna |
++-----------+------------------+
+10 rows in set (1.47 sec)
+
+----------------------------------------------------------------------------------------------------
+
+j)
+
+SRK PID
+select PID from pratip_Person where name = "Shah Rukh Khan"
+
+SRK movies
+select MID from pratip_M_Cast where PID = (select PID from pratip_Person where name = "Shah Rukh Khan")
+
+SRK no 1
+mysql> select distinct PID from pratip_M_Cast where MID in (select MID from pratip_M_Cast where PID = (select PID from pratip_Person where name = "Shah Rukh Khan")) and PID <> (select PID from pratip_Person where name = "Shah Rukh Khan");
+
+SRK neighbour movie
+
+select 
+	distinct MID 
+from 
+	pratip_M_Cast
+where
+	PID in (select distinct PID from pratip_M_Cast where MID in (select MID from pratip_M_Cast where PID = (select PID from pratip_Person where name = "Shah Rukh Khan"))) 
+and
+	PID <> (select PID from pratip_Person where name = "Shah Rukh Khan") 
+and 
+	MID not in (select MID from pratip_M_Cast where PID = (select PID from pratip_Person where name = "Shah Rukh Khan"))
+
+
+
+/* Beautified */
+mysql> 
+select 
+	distinct PID 
+from 
+	pratip_M_Cast 
+where 
+	MID in (
+		select distinct MID from pratip_M_Cast 
+		where 
+			PID in (
+				select distinct PID from pratip_M_Cast 
+				where MID in (
+					select MID from pratip_M_Cast 
+					where 
+						PID = (select PID from pratip_Person where name = "Shah Rukh Khan")
+				)
+			)
+		and 
+			PID <> (select PID from pratip_Person where name = "Shah Rukh Khan") 
+		and 
+			MID not in (
+				select MID from pratip_M_Cast 
+				where 
+					PID = (select PID from pratip_Person where name = "Shah Rukh Khan")
+			)
+		)
+and 
+	PID not in (
+		select distinct PID from pratip_M_Cast 
+		where MID in (
+			select MID from pratip_M_Cast where PID = (select PID from pratip_Person where name = "Shah Rukh Khan")
+			)
+		)
+limit 10;
+
+mysql> select distinct PID from pratip_M_Cast  where  MID in ( select distinct MID from pratip_M_Cast  where  PID in ( select distinct PID from pratip_M_Cast  where  MID in ( select MID from pratip_M_Cast  where  PID = (select PID from pratip_Person where name = "Shah Rukh Khan") ) ) and  PID <> (select PID from pratip_Person where name = "Shah Rukh Khan")  and  MID not in ( select MID from pratip_M_Cast  where  PID = (select PID from pratip_Person where name = "Shah Rukh Khan") ) ) and  PID not in ( select distinct PID from pratip_M_Cast  where MID in ( select MID from pratip_M_Cast where PID = (select PID from pratip_Person where name = "Shah Rukh Khan") ) ) limit 10;
++-----------+
+| PID       |
++-----------+
+| nm0764407 |
+| nm0219946 |
+| nm0219947 |
+| nm0783996 |
+| nm0222743 |
+| nm0695155 |
+| nm0474931 |
+| nm1783998 |
+| nm0080231 |
+| nm0667985 |
++-----------+
+10 rows in set (0.05 sec)
+
+count of such actors:
+
+mysql> select count(*) from (select distinct PID from pratip_M_Cast  where  MID in ( select distinct MID from pratip_M_Cast  where  PID in ( select distinct PID from pratip_M_Cast  where  MID in ( select MID from pratip_M_Cast  where  PID = (select PID from pratip_Person where name = "Shah Rukh Khan") ) ) and  PID <> (select PID from pratip_Person where name = "Shah Rukh Khan")  and  MID not in ( select MID from pratip_M_Cast  where  PID = (select PID from pratip_Person where name = "Shah Rukh Khan") ) ) and  PID not in ( select distinct PID from pratip_M_Cast  where MID in ( select MID from pratip_M_Cast where PID = (select PID from pratip_Person where name = "Shah Rukh Khan") ) ) ) as asd;
++----------+
+| count(*) |
++----------+
+|    13063 |
++----------+
+1 row in set (2 min 31.43 sec)
+
+
+====================================================================================================
+2)
+====================================================================================================
+
+a)
+
+mysql> select title,count(PID) as castSize  from mc where year = 1970 group by MID order by castSize desc;
++-------------------+----------+
+| title             | castSize |
++-------------------+----------+
+| Heer Raanjha      |       52 |
+| Johny Mera Naam   |       27 |
+| The Train         |       26 |
+| Khilona           |       25 |
+| Aan Milo Sajna    |       24 |
+| Prem Pujari       |       23 |
+| Purab Aur Pachhim |       23 |
+| Dastak            |       23 |
+| Kati Patang       |       22 |
+| Sachaa Jhutha     |       19 |
+| Safar             |       18 |
+| Jeevan Mrityu     |       18 |
+| Humjoli           |       16 |
+| Khamoshi          |       14 |
+| Uski Roti         |        4 |
++-------------------+----------+
+15 rows in set (0.00 sec)
+
+----------------------------------------------------------------------------------------------------
+
+b)
+
+mysql> select b.name,count(MID) as nm from mc natural join pratip_Person as b where year >1990  group by PID having nm>13 limit 10;
++------------------+-----+
+| name             | nm  |
++------------------+-----+
+| Shabana Azmi     |  19 |
+| Amitabh Bachchan |  81 |
+| Kabir Bedi       |  19 |
+| Madhuri Dixit    |  39 |
+| Gulshan Grover   | 125 |
+| Rekha            |  18 |
+| Hrithik Roshan   |  24 |
+| Kajol            |  32 |
+| Dharmendra       |  18 |
+| Shammi Kapoor    |  16 |
++------------------+-----+
+10 rows in set (0.17 sec)
+
+----------------------------------------------------------------------------------------------------
+
+c)
+
+mysql> select y.name as actor_1,z.name as actor_2,cnt from (select a.PID as a1,b.PID as a2,count(a.MID) as cnt from pratip_M_Cast as a inner join pratip_M_Cast as b on a.MID = b.MID where a.PID < b.PID group by a.PID,b.PID having cnt >10 order by cnt desc )as x inner join pratip_Person as y on x.a1 = y.PID inner join pratip_Person as z on z.PID = x.a2 limit 10;
++----------------+---------------+-----+
+| actor_1        | actor_2       | cnt |
++----------------+---------------+-----+
+| Shakti Kapoor  | Kader Khan    |  46 |
+| Shakti Kapoor  | Dinesh Hingoo |  37 |
+| Shakti Kapoor  | Asrani        |  34 |
+| Kader Khan     | Dinesh Hingoo |  34 |
+| Vikas Anand    | Yunus Parvez  |  32 |
+| Dinesh Hingoo  | Johnny Lever  |  31 |
+| Gulshan Grover | Shakti Kapoor |  31 |
+| Iftekhar       | Jagdish Raj   |  31 |
+| Shakti Kapoor  | Govinda       |  31 |
+| Razak Khan     | Johnny Lever  |  30 |
++----------------+---------------+-----+
+10 rows in set (7.41 sec)
+
+----------------------------------------------------------------------------------------------------
+
+d)
+
+?* Ambiguity  *?
+
+----------------------------------------------------------------------------------------------------
+
+e)
+
+mysql> select year,count(MID) as number_of_movies from mc where PID = (select PID from pratip_Person where name = "Amitabh Bachchan") group by year order by number_of_movies desc limit 10;
++------+------------------+
+| year | number_of_movies |
++------+------------------+
+| 2004 |               11 |
+| 2005 |                8 |
+| 1981 |                8 |
+| 2007 |                7 |
+| 1975 |                7 |
+| 1979 |                7 |
+| 1974 |                6 |
+| 1982 |                6 |
+| 1999 |                5 |
+| 1973 |                5 |
++------+------------------+
+10 rows in set (0.02 sec)
+
+----------------------------------------------------------------------------------------------------
+
+f)
+
+mysql> select name from pratip_Person where PID in (select distinct PID from pratip_M_Cast where MID in (select MID from pratip_M_Cast where PID = (select PID from pratip_Person where name ="Om Puri")) and PID <> (select PID from pratip_Person where name ="Om Puri")) limit 10;
++------------------+
+| name             |
++------------------+
+| Shabana Azmi     |
+| Amitabh Bachchan |
+| Kabir Bedi       |
+| Madhuri Dixit    |
+| Gulshan Grover   |
+| Rekha            |
+| Hrithik Roshan   |
+| Kajol            |
+| Dharmendra       |
+| Kunal Kapoor     |
++------------------+
+10 rows in set (0.08 sec)
+
+----------------------------------------------------------------------------------------------------
+
+g)
+
+a)
+
+mysql> select b.name as actor, c.name as director,mcount from admcount as a inner join pratip_Person as b on a.actor = b.PID inner join pratip_Person as c on c.PID = a.director where mcount = (select max(mcount) from admcount);
++--------------+--------------+--------+
+| actor        | director     | mcount |
++--------------+--------------+--------+
+| Shashi Kiran | David Dhawan |     23 |
++--------------+--------------+--------+
+1 row in set (0.60 sec)
+
+b)
+
+mysql> create view apmcount as select a.MID, a.PID as actor, b.PID as producer,count(a.MID) as mcount from pratip_M_Cast as a inner join pratip_M_Producer as b on a.MID = b.MID group by actor, producer;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> select a.name as actor,b.name as producer,mcount from apmcount inner join pratip_Person as a on a.PID = actor inner join pratip_Person as b on b.PID = producer where mcount = (select max(mcount) from apmcount);
++---------------+--------------+--------+
+| actor         | producer     | mcount |
++---------------+--------------+--------+
+| Emraan Hashmi | Mukesh Bhatt |     15 |
++---------------+--------------+--------+
+1 row in set (1.07 sec)
+
+----------------------------------------------------------------------------------------------------
+
+h)
+
+for "Dhoom:"
+
+mysql> select distinct a.PID,person.name from pratip_M_Cast as a natural join pratip_Person as person where not exists(select MID from pratip_Movie as b where title like "Dhoom:%" and MID not in (select c.MID from pratip_M_Cast as c where c.PID = a.PID) );
++-----------+-------------------+
+| PID       | name              |
++-----------+-------------------+
+| nm0045393 | Abhishek Bachchan |
+| nm0159167 | Uday Chopra       |
++-----------+-------------------+
+2 rows in set (15.12 sec)
+
+for "Dhoom"
+
+mysql> select distinct a.PID,person.name from pratip_M_Cast as a natural join pratip_Person as person where not exists(select MID from pratip_Movie as b where title like "Dhoom%" and MID not in (select c.MID from pratip_M_Cast as c where c.PID = a.PID) );
+Empty set (14.78 sec)
+
+----------------------------------------------------------------------------------------------------
